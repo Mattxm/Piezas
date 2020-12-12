@@ -1,5 +1,10 @@
 #include "Piezas.h"
 #include <vector>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
 /** CLASS Piezas
  * Class for representing a Piezas vertical board, which is roughly based
  * on the game "Connect Four" where pieces are placed in a column and 
@@ -20,9 +25,21 @@
  * Constructor sets an empty board (default 3 rows, 4 columns) and 
  * specifies it is X's turn first
 **/
+
+
 Piezas::Piezas()
 {
+    reset();
 }
+
+/* Added local function for more reusability */
+void SwitchTurn(Piece &turn){
+    if (turn == X)
+        turn = O;
+    else
+        turn = X;
+}
+
 
 /**
  * Resets each board location to the Blank Piece value, with a board of the
@@ -30,6 +47,15 @@ Piezas::Piezas()
 **/
 void Piezas::reset()
 {
+    board.clear();
+    turn = X;
+    for(int i= 0; i < BOARD_ROWS; i++){
+        std::vector<Piece> temp; 
+        for(int j = 0; j < BOARD_COLS; j++){
+            temp.push_back(Blank);
+        }
+        board.push_back(temp);   
+    }
 }
 
 /**
@@ -42,7 +68,21 @@ void Piezas::reset()
 **/ 
 Piece Piezas::dropPiece(int column)
 {
-    return Blank;
+    if ((column <= 3) && (column >= 0)){
+        for(int i=BOARD_ROWS; i -- > 0;){
+            if (board[i][column] == Blank){
+                board[i][column] = turn;
+                SwitchTurn(turn);
+                return board[i][column];
+                }
+        }
+        SwitchTurn(turn);
+        return Blank;
+    }
+    else{
+        SwitchTurn(turn);
+        return Invalid;
+    }
 }
 
 /**
@@ -51,7 +91,13 @@ Piece Piezas::dropPiece(int column)
 **/
 Piece Piezas::pieceAt(int row, int column)
 {
-    return Blank;
+    try{
+        cout << board[BOARD_ROWS-1 - row][column];
+        return board[BOARD_ROWS-1 - row][column];
+    }
+    catch (const std::out_of_range& oor){
+        return Invalid;
+    }
 }
 
 /**
@@ -64,6 +110,73 @@ Piece Piezas::pieceAt(int row, int column)
  * line, it is a tie.
 **/
 Piece Piezas::gameState()
-{
-    return Blank;
+{ 
+    if (count(board[0].begin(), board[0].end(), Blank) == 0){
+        int lx = 0;
+        int lo = 0;
+        int cx = 0;
+        int co = 0;
+        Piece last = Blank;
+        Piece cur = Blank;
+        for (auto x : board){
+            for (auto y : x){
+                cur = y;
+                if (cur != last){
+                    if (cur == X)
+                        cx = 1;
+                    if (cur == O)
+                        co = 1;
+                }
+                else{
+                    if (cur == X)
+                        cx++;
+                    if (cur == O)
+                        co++;
+                }
+                last = cur;
+                if (cx > lx)
+                    lx = cx;
+                if (co > lo)
+                    lo = co;
+            }
+            cx = 0;
+            co = 0;
+        }
+
+        last = Blank;
+        for (int i = 0; i < BOARD_COLS; i++)
+        {
+            for (int j = 0; j < BOARD_ROWS; j++)
+            {
+                cur = board[j][i];
+                if (cur != last){
+                    if (cur == X)
+                        cx = 1;
+                    if (cur == O)
+                        co = 1;
+                }
+                else{
+                    if (cur == X)
+                        cx++;
+                    if (cur == O)
+                        co++;
+                }
+                last = cur;
+                if (cx > lx)
+                    lx = cx;
+                if (co > lo)
+                    lo = co;
+
+            }
+            cx = 0;
+            co = 0;
+        }
+        
+        if (lx > lo)
+            return X;
+        else if (lo > lx)
+            return O;
+        else return Blank;
+    }
+    return Invalid;
 }
