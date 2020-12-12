@@ -71,6 +71,25 @@ TEST(PiezasTest, XWinCheck)
 	ASSERT_TRUE(test.gameState() == X);
 }
 
+TEST(PiezasTest, VerticalWinCheck)
+{
+	Piezas test;
+	test.dropPiece(0);
+	test.dropPiece(0);
+	test.dropPiece(0);
+	test.dropPiece(1);
+	test.dropPiece(1);
+	test.dropPiece(1);
+	test.dropPiece(2);
+	test.dropPiece(3);
+	test.dropPiece(2);
+	test.dropPiece(1);
+	test.dropPiece(2);
+	test.dropPiece(3);
+	test.dropPiece(3);
+	ASSERT_TRUE(test.gameState() == X);
+}
+
 TEST(PiezasTest, FailToPlacePiece)
 {
 	Piezas test;
@@ -106,6 +125,13 @@ TEST(PiezasTest, PlacePieceCheckO)
 	test.dropPiece(3);
 	ASSERT_TRUE(test.pieceAt(1,3) == O);
 }
+
+TEST(PiezasTest, PieceAtOOB)
+{
+	Piezas test;
+	ASSERT_TRUE(test.pieceAt(-1,4) == Invalid);
+}
+
 
 TEST(PiezasTest, PlacePieceResetPlaceX)
 {

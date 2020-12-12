@@ -91,13 +91,12 @@ Piece Piezas::dropPiece(int column)
 **/
 Piece Piezas::pieceAt(int row, int column)
 {
-    try{
+    if ((row <= 2) && (row >= 0) && (column <= 3) && (column >= 0)){
         cout << board[BOARD_ROWS-1 - row][column];
         return board[BOARD_ROWS-1 - row][column];
     }
-    catch (const std::out_of_range& oor){
+    else 
         return Invalid;
-    }
 }
 
 /**
